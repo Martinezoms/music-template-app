@@ -9,14 +9,19 @@
         <!-- Primary Navigation -->
         <ul class="flex flex-row mt-1">
           <!-- Navigation Links -->
-          <li>
+          <li v-if="!userLoggedIn">
             <a class="px-2 text-white" href="#" @click.prevent="toggleAuthModal"
               >Login / Register</a
             >
           </li>
-          <li>
-            <a class="px-2 text-white" href="#">Manage</a>
-          </li>
+          <template v-else>
+            <li v-if="userLoggedIn">
+              <a class="px-2 text-white" href="#">Manage</a>
+            </li>
+            <li>
+              <a class="px-2 text-white" href="#" @click.prevent="signOut">Logout</a>
+            </li>
+          </template>
         </ul>
       </div>
     </nav>
@@ -24,18 +29,21 @@
 </template>
 
 <script>
-import { mapWritableState } from 'pinia'
-import { useModalStore } from '@/stores/modal.js'
+import { mapActions, mapWritableState } from 'pinia'
+import { useModalStore } from '@/stores/modal'
+import { useUserStore } from '@/stores/user'
 
 export default {
   // eslint-disable-next-line vue/no-reserved-component-names
   name: 'Header',
 
   computed: {
-    ...mapWritableState(useModalStore, ['isAuthModalOpen'])
+    ...mapWritableState(useModalStore, ['isAuthModalOpen']),
+    ...mapWritableState(useUserStore, ['userLoggedIn'])
   },
 
   methods: {
+    ...mapActions(useUserStore, ['signOut']),
     toggleAuthModal() {
       this.isAuthModalOpen = !this.isAuthModalOpen
     }
