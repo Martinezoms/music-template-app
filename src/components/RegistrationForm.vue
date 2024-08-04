@@ -17,7 +17,7 @@
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         placeholder="Enter Name"
       />
-      <ErrorMessage class="text-red-600" name="name" />
+      <ErrorMessage class="text-red-600 text-xs" name="name" />
     </div>
     <!-- Email -->
     <div class="mb-3">
@@ -28,7 +28,7 @@
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         placeholder="Enter Email"
       />
-      <ErrorMessage class="text-red-600" name="email" />
+      <ErrorMessage class="text-red-600 text-xs" name="email" />
     </div>
     <!-- Age -->
     <div class="mb-3">
@@ -38,7 +38,7 @@
         type="number"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
       />
-      <ErrorMessage class="text-red-600" name="age" />
+      <ErrorMessage class="text-red-600 text-xs" name="age" />
     </div>
     <!-- Password -->
     <div class="mb-3">
@@ -64,7 +64,7 @@
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         placeholder="Confirm Password"
       />
-      <ErrorMessage class="text-red-600" name="confirm_password" />
+      <ErrorMessage class="text-red-600 text-xs" name="confirm_password" />
     </div>
     <!-- Country -->
     <div class="mb-3">
@@ -79,7 +79,7 @@
         <option value="Germany">Germany</option>
         <option value="Kenya">Kenya</option>
       </vee-field>
-      <ErrorMessage class="text-red-600" name="country" />
+      <ErrorMessage class="text-red-600 text-xs" name="country" />
     </div>
     <!-- TOS -->
     <div class="mb-3 pl-6">
@@ -90,7 +90,7 @@
         class="w-4 h-4 float-left -ml-6 mt-1 rounded"
       />
       <label class="inline-block">Accept terms of service</label>
-      <ErrorMessage class="text-red-600 block" name="tos" />
+      <ErrorMessage class="text-red-600 block text-xs" name="tos" />
     </div>
     <button
       type="submit"

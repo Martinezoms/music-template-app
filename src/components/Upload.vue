@@ -19,6 +19,7 @@
       >
         <h5>Drop your files here</h5>
       </div>
+      <input type="file" multiple @change.prevent.stop="upload($event)" />
       <hr class="my-6" />
       <!-- Progess Bars -->
       <div class="mb-4" v-for="(upload, index) in uploads" :key="index">
@@ -41,10 +42,16 @@
 </template>
 
 <script>
-import { storage, auth } from '@/includes/firebase'
+import { storage, auth, songsCollection } from '@/includes/firebase'
 
 export default {
   name: 'Upload',
+  props: {
+    addSong: {
+      type: Function,
+      required: true
+    }
+  },
   data() {
     return {
       isDragOver: false,
@@ -55,7 +62,7 @@ export default {
     upload($event) {
       this.isDragOver = false
 
-      const files = [...$event.dataTransfer.files]
+      const files = $event?.dataTransfer ? [...$event.dataTransfer.files] : [...$event.traget.files]
       const storageRef = storage.ref()
 
       files.forEach((file) => {
@@ -86,14 +93,23 @@ export default {
             this.uploads[uploadIndex].text_class = 'text-red-400'
             console.error(error)
           },
-          () => {
-            // const song = {
-            //   uid: auth.currentUser.uid,
-            //   display_name: auth.currentUser.displayName,
-            //   original_name: task.snapshot.ref.name,
-            //   modified_name: task.snapshot.ref.name,
-            //   genre: ''
-            // }
+          async () => {
+            const song = {
+              uid: auth.currentUser.uid,
+              display_name: auth.currentUser.displayName,
+              original_name: task.snapshot.ref.name,
+              modified_name: task.snapshot.ref.name,
+              genre: '',
+              comment_count: 0
+            }
+
+            song.url = await task.snapshot.ref.getDownloadURL()
+
+            const songRef = await songsCollection.add(song)
+            const songSnapshot = await songRef.get()
+
+            this.addSong(songSnapshot)
+
             this.uploads[uploadIndex].variant = 'bg-green-400'
             this.uploads[uploadIndex].icon = 'fas fa-check'
             this.uploads[uploadIndex].text_class = 'text-green-400'
@@ -101,6 +117,9 @@ export default {
         )
       })
     }
+  },
+  beforeUnmount() {
+    this.uploads.forEach((upload) => upload.task.cancel())
   }
 }
 </script>
