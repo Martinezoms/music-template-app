@@ -25,7 +25,7 @@
     <div class="bg-white rounded border border-gray-200 relative flex flex-col">
       <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
         <!-- Comment Count -->
-        <span class="card-title">Comments (15)</span>
+        <span class="card-title">Comments ({{ song?.comment_count ?? 0 }})</span>
         <i class="fa fa-comments float-right text-green-400 text-2xl"></i>
       </div>
       <div class="p-6">
@@ -71,17 +71,17 @@
   <ul class="container mx-auto">
     <li
       v-for="comment in sortedComments"
-      :key="comment.docID"
+      :key="comment?.docID"
       class="p-6 bg-gray-50 border border-gray-200"
     >
       <!-- Comment Author -->
       <div class="mb-5">
-        <div class="font-bold">{{ comment.name }}</div>
-        <time>{{ comment.datePosted }}</time>
+        <div class="font-bold">{{ comment?.name }}</div>
+        <time>{{ comment?.datePosted }}</time>
       </div>
 
       <p>
-        {{ comment.content }}
+        {{ comment?.content }}
       </p>
     </li>
   </ul>
@@ -159,6 +159,11 @@ export default {
         }
 
         await commentsCollection.add(comment)
+        this.song.comment_count += 1
+        await songsCollection.doc(this.$route.params.id).update({
+          comment_count: this.song.comment_count
+        })
+
         this.getComments()
 
         this.comment_alert_variant = 'bg-green-500'
