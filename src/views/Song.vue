@@ -36,7 +36,7 @@
         >
           {{ comment_alert_message }}
         </div>
-        <vee-form :validation-schema="schema" @submit="addComment">
+        <vee-form :validation-schema="schema" @submit="addComment" v-if="userLoggedIn">
           <div class="mb-4">
             <vee-field
               as="textarea"
@@ -144,7 +144,10 @@
 </template>
 
 <script>
-import { songsCollection } from '@/includes/firebase'
+import { songsCollection, commentsCollection, auth } from '@/includes/firebase'
+import { mapState } from 'pinia'
+import { useUserStore } from '@/stores/user'
+
 export default {
   name: 'Song',
   data() {
@@ -158,6 +161,10 @@ export default {
       comment_alert_variant: 'bg-blue-500',
       comment_alert_message: 'Please wait! Your comment is being submitted'
     }
+  },
+
+  computed: {
+    ...mapState(useUserStore, ['userLoggedIn'])
   },
 
   async created() {
@@ -176,17 +183,33 @@ export default {
   },
 
   methods: {
-    async addComment(values) {
+    async addComment(values, { resetForm }) {
       try {
         this.comment_show_alert = true
         this.comment_in_submission = true
         this.comment_alert_variant = 'bg-blue-500'
         this.comment_alert_message = 'Please wait! Your comment is being submitted'
+
+        const comment = {
+          content: values.comment,
+          datePosted: new Date().toString(),
+          sid: this.$route.params.id,
+          name: auth.currentUser.displayName,
+          uid: auth.currentUser.uid
+        }
+
+        await commentsCollection.add(comment)
+        this.comment_alert_variant = 'bg-green-500'
+        this.comment_alert_message = 'Comment added!'
+
+        resetForm()
       } catch (error) {
         console.error(error)
 
         this.comment_alert_variant = 'bg-red-500'
-        this.comment_alert_message = 'Please wait! Your comment is being submitted'
+        this.comment_alert_message = 'An error occured why submitting your comment'
+      } finally {
+        this.comment_in_submission = false
       }
     }
   }
