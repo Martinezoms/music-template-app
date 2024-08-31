@@ -58,6 +58,7 @@
         </vee-form>
         <!-- Sort Comments -->
         <select
+          v-model="sortMethod"
           class="block mt-4 py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         >
           <option value="1">Latest</option>
@@ -68,76 +69,19 @@
   </section>
   <!-- Comments -->
   <ul class="container mx-auto">
-    <li class="p-6 bg-gray-50 border border-gray-200">
+    <li
+      v-for="comment in sortedComments"
+      :key="comment.docID"
+      class="p-6 bg-gray-50 border border-gray-200"
+    >
       <!-- Comment Author -->
       <div class="mb-5">
-        <div class="font-bold">Elaine Dreyfuss</div>
-        <time>5 mins ago</time>
+        <div class="font-bold">{{ comment.name }}</div>
+        <time>{{ comment.datePosted }}</time>
       </div>
 
       <p>
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium der doloremque
-        laudantium.
-      </p>
-    </li>
-    <li class="p-6 bg-gray-50 border border-gray-200">
-      <!-- Comment Author -->
-      <div class="mb-5">
-        <div class="font-bold">Elaine Dreyfuss</div>
-        <time>5 mins ago</time>
-      </div>
-
-      <p>
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium der doloremque
-        laudantium.
-      </p>
-    </li>
-    <li class="p-6 bg-gray-50 border border-gray-200">
-      <!-- Comment Author -->
-      <div class="mb-5">
-        <div class="font-bold">Elaine Dreyfuss</div>
-        <time>5 mins ago</time>
-      </div>
-
-      <p>
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium der doloremque
-        laudantium.
-      </p>
-    </li>
-    <li class="p-6 bg-gray-50 border border-gray-200">
-      <!-- Comment Author -->
-      <div class="mb-5">
-        <div class="font-bold">Elaine Dreyfuss</div>
-        <time>5 mins ago</time>
-      </div>
-
-      <p>
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium der doloremque
-        laudantium.
-      </p>
-    </li>
-    <li class="p-6 bg-gray-50 border border-gray-200">
-      <!-- Comment Author -->
-      <div class="mb-5">
-        <div class="font-bold">Elaine Dreyfuss</div>
-        <time>5 mins ago</time>
-      </div>
-
-      <p>
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium der doloremque
-        laudantium.
-      </p>
-    </li>
-    <li class="p-6 bg-gray-50 border border-gray-200">
-      <!-- Comment Author -->
-      <div class="mb-5">
-        <div class="font-bold">Elaine Dreyfuss</div>
-        <time>5 mins ago</time>
-      </div>
-
-      <p>
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium der doloremque
-        laudantium.
+        {{ comment.content }}
       </p>
     </li>
   </ul>
@@ -153,6 +97,8 @@ export default {
   data() {
     return {
       song: null,
+      comments: [],
+      sortMethod: 1,
       schema: {
         comment: 'required|min:3'
       },
@@ -164,7 +110,16 @@ export default {
   },
 
   computed: {
-    ...mapState(useUserStore, ['userLoggedIn'])
+    ...mapState(useUserStore, ['userLoggedIn']),
+    sortedComments() {
+      return this.comments.slice().sort((a, b) => {
+        if (this.sortMethod == 1) {
+          return new Date(b.datePosted) - new Date(a.datePosted)
+        } else {
+          return new Date(a.datePosted) - new Date(b.datePosted)
+        }
+      })
+    }
   },
 
   async created() {
@@ -177,6 +132,7 @@ export default {
       }
 
       this.song = docSnapshot.data()
+      this.getComments()
     } catch (error) {
       console.error(error)
     }
@@ -199,6 +155,8 @@ export default {
         }
 
         await commentsCollection.add(comment)
+        this.getComments()
+
         this.comment_alert_variant = 'bg-green-500'
         this.comment_alert_message = 'Comment added!'
 
@@ -211,6 +169,18 @@ export default {
       } finally {
         this.comment_in_submission = false
       }
+    },
+
+    async getComments() {
+      const snapshots = await commentsCollection.where('sid', '==', this.$route.params.id).get()
+      this.comments = []
+
+      snapshots.forEach((doc) => {
+        this.comments.push({
+          docID: doc.id,
+          ...doc.data()
+        })
+      })
     }
   }
 }
