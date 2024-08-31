@@ -62,7 +62,7 @@ export default {
     upload($event) {
       this.isDragOver = false
 
-      const files = $event?.dataTransfer ? [...$event.dataTransfer.files] : [...$event.traget.files]
+      const files = $event?.dataTransfer ? [...$event.dataTransfer.files] : [...$event.target.files]
       const storageRef = storage.ref()
 
       files.forEach((file) => {

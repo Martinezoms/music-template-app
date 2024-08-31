@@ -74,10 +74,12 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    if (!this.unsavedFlag) next()
-
-    const leave = confirm('You have unsaved changes. Are you sure you want to leave?')
-    next(leave)
+    if (!this.unsavedFlag) {
+      next()
+    } else {
+      const leave = confirm('You have unsaved changes. Are you sure you want to leave?')
+      next(leave)
+    }
   }
 }
 </script>
