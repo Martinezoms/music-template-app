@@ -3,6 +3,10 @@
     "listen": "Écoutez de la bonne musique!"
   },
   "song": {
-    "comment_count": "{count} Comments"
+    "comment_count": " Pas de commentaires | 1 commentaire | {count} commentaires"
+  },
+  "register": {
+    "accept": "J'accepte {0} de Music",
+    "tos": "les conditions d'utilisation"
   }
 }
